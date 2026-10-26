@@ -117,7 +117,3 @@ flowchart TD
 | Database | Stores reservation, bicycle inventory, customer, and operational information. |
 | External Payment Processor | Processes rental payments, additional charges, and authorized refunds. |
 | Existing Waiver Service | Allows customers to electronically sign rental agreements and liability waivers. |
-"""
-path = Path("/mnt/data/design_doc.md")
-path.write_text(content, encoding="utf-8")
-print(f"Created {path.name} ({len(content.splitlines())} lines)")
