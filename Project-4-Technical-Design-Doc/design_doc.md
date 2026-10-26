@@ -18,7 +18,7 @@ The Bend Bike Shop system interacts with the following actors:
 
 ## 3. Goals/Non-Goals
 
-### Goals
+### 3.1 Goals
 
 The primary goal of the Bend Bike Shop system is to simplify bicycle rentals for customers while providing employees and managers with the tools needed to manage daily rental operations.
 
@@ -32,7 +32,7 @@ The system will:
 - Allow managers to manage bicycle inventory, maintenance, refunds, disputes, and rental activity.
 - Keep bicycle availability updated to prevent conflicting reservations and exclude bicycles requiring maintenance.
 
-### Non-Goals
+### 3.2 Non-Goals
 
 The following features are outside the scope of the Bend Bike Shop system:
 
@@ -67,7 +67,7 @@ The following assumptions will guide the technical design of the Bend Bike Shop 
 
 The Bend Bike Shop system must meet the following measurable requirements:
 
-1. **Response Time:** The system must display bicycle availability search results within 2 seconds for at least 95% of requests under normal operating conditions.
+1. **Response Time:** The system must display bicycle availability search results within 2 seconds for at least 95% of requests while supporting up to 100 concurrent users.
 2. **System Availability:** The application must maintain at least 99.5% uptime per calendar month, excluding scheduled maintenance.
 3. **Concurrent Users:** The system must support at least 100 simultaneous users browsing bicycles, managing reservations, or accessing employee and manager dashboards without exceeding the defined response-time requirement.
 4. **Session Security:** Employee and manager accounts must automatically expire after 15 minutes of inactivity, requiring users to authenticate again before accessing protected functions.
@@ -75,45 +75,57 @@ The Bend Bike Shop system must meet the following measurable requirements:
 
 ## 7. Component Diagram and Description
 
-The following diagram shows the major components of the Bend Bike Shop system and their relationships.
+The following diagram shows the major components of the Bend Bike Shop system and their relationships. Reservation Management coordinates waiver verification before payment and confirms a reservation after successful payment. Refund requests require verified manager authorization before Payment Integration submits them to the external processor. Payment transaction references and waiver completion statuses are stored with the associated reservation records; sensitive card details remain with the external payment processor.
 
-```mermaid
-flowchart TD
+```Mermaid
+flowchart LR
     UI["Web / Kiosk Interface"]
     Backend["Application Backend"]
-    Reservations["Reservation Management"]
-    Inventory["Inventory Management"]
-    Payments["Payment Integration"]
-    Waiver["Liability Waiver Integration"]
-    Staff["Staff Management"]
+
+    subgraph Core["Internal System Components"]
+        direction TB
+        Staff["Staff Management"]
+        Reservations["Reservation Management"]
+        Inventory["Inventory Management"]
+        Waiver["Liability Waiver Integration"]
+        Payments["Payment Integration"]
+    end
+
     Database[("Database")]
     Processor["External Payment Processor"]
     WaiverService["Existing Waiver Service"]
 
     UI --> Backend
+
+    Backend --> Staff
     Backend --> Reservations
     Backend --> Inventory
-    Backend --> Payments
     Backend --> Waiver
-    Backend --> Staff
+    Backend --> Payments
 
     Reservations <--> Inventory
+    Reservations --> Waiver
+    Reservations --> Payments
+
+    Staff -->|"Manager authorization"| Payments
+
     Reservations --> Database
     Inventory --> Database
     Staff --> Database
-    Payments --> Processor
+
     Waiver --> WaiverService
+    Payments --> Processor
 ```
 
 | Component | Description |
 |---|---|
 | Web / Kiosk Interface | Allows customers, employees, and managers to interact with the system. |
 | Application Backend | Handles requests from the interface and coordinates system functionality. |
-| Reservation Management | Creates, modifies, cancels, and tracks bicycle reservations, including pickups, returns, and late fees. |
-| Inventory Management | Tracks bicycles, availability, maintenance status, and rental pricing. |
-| Payment Integration | Communicates with the external payment processor to handle payments, additional charges, and refunds. |
-| Liability Waiver Integration | Connects to the existing waiver service to verify completed waivers. |
-| Staff Management | Handles employee and manager authentication, permissions, and access to administrative functions. |
-| Database | Stores reservation, bicycle inventory, customer, and operational information. |
+| Reservation Management | Creates, modifies, cancels, and tracks bicycle reservations, including pickups, returns, and late fees. Coordinates waiver verification before payment, records payment and waiver statuses and transaction references, and identifies reservations affected by maintenance. Requires authorization verification before guests can access or change existing reservations. Tracks refund requests for manager approval. |
+| Inventory Management | Tracks bicycles, availability, maintenance status, and rental pricing. Communicates maintenance-related unavailability to Reservation Management so managers can review affected bookings. |
+| Payment Integration | Communicates with the external payment processor to handle payments, additional charges, and refunds. Processes refunds only after manager authorization has been verified. |
+| Liability Waiver Integration | Connects to the existing waiver service to verify completed waivers before payment. |
+| Staff Management | Handles employee and manager authentication, permissions, and access to administrative functions, including verification of manager permissions for refund approvals. |
+| Database | Stores reservation, bicycle inventory, customer, and operational information, including payment transaction references and waiver completion statuses linked to reservations; it does not store customers’ payment card details. |
 | External Payment Processor | Processes rental payments, additional charges, and authorized refunds. |
 | Existing Waiver Service | Allows customers to electronically sign rental agreements and liability waivers. |
