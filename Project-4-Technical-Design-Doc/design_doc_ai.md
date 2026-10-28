@@ -77,7 +77,7 @@ The Bend Bike Shop system must meet the following measurable requirements:
 
 The following diagram shows the major components of the Bend Bike Shop system and their relationships. Reservation Management coordinates waiver verification before payment and confirms a reservation after successful payment. Refund requests require verified manager authorization before Payment Integration submits them to the external processor. Payment transaction references and waiver completion statuses are stored with the associated reservation records; sensitive card details remain with the external payment processor.
 
-```Mermaid
+```mermaid
 flowchart LR
     UI["Web / Kiosk Interface"]
     Backend["Application Backend"]
