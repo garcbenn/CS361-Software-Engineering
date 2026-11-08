@@ -463,3 +463,28 @@ gantt
 | 1.6.5.1 | D1 | 173 | 10 | 183 | 2027-07-08 |
 | 1.4.1.3 | D2 | 173 | 4 | 177 | 2027-07-08 |
 | 1.1.3.3 | D2 | 177 | 3 | 180 | 2027-07-14 |
+
+## 6. LLM Review and Revisions
+
+### Review Process
+
+I used ChatGPT to review the Bend Bike Shop work breakdown structure, PERT estimates, Monte Carlo simulation, critical path analysis, and Gantt chart. I asked it to identify missing tasks, evaluate the reasonableness of the estimates, and check whether the project schedule reflected the dependencies and limitations of a two-developer team.
+
+### Review Findings
+
+The review found that the WBS covers the major functionality described in the technical design, including customer reservations, inventory management, payments, liability waivers, employee workflows, manager administration, security, testing, and deployment.
+
+The estimates are reasonable as preliminary planning assumptions, although complex features such as payment processing, reservation conflict prevention, and external service integrations carry additional uncertainty.
+
+The review also identified scheduling concerns. Some tasks were scheduled too late, and some dependencies did not adequately ensure that all required functionality would be completed before launch.
+
+### Recommended Revisions
+
+1. Update task dependencies so all required features and documentation are completed before final acceptance testing and deployment.
+2. Recalculate the critical path and Gantt schedule after adjusting dependencies.
+3. Clearly distinguish the dependency-only Monte Carlo P90 estimate from the resource-constrained two-developer schedule.
+4. Clean up minor formatting issues in the CPM table.
+
+### Conclusion
+
+The LLM review helped identify weaknesses in the original scheduling assumptions. The most important finding was that task dependencies and developer availability must be considered together when estimating a realistic project completion date.
