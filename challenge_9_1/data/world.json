@@ -1,0 +1,210 @@
+{
+  "title": "The Last Light",
+  "intro": "The keeper of the Gull Point light hasn't been seen in three days, and tonight the lamp is dark. You have rowed out to find out why. Somewhere beyond the rocks, a ship is coming in blind.",
+  "start": "beach",
+  "max_score": 40,
+  "synonyms": {"ignite": "light", "kindle": "light", "unbolt": "unlock"},
+
+  "rooms": {
+    "beach": {
+      "name": "Shingle Beach",
+      "description": "Cold surf drags at a beach of grey shingle where your rowing boat is pulled up. Above you on the headland the lighthouse stands dark against the dusk. A path climbs north.",
+      "exits": {"north": "path"}
+    },
+    "path": {
+      "name": "Headland Path",
+      "description": "The path forks among wind-flattened gorse. The keeper's cottage lies to the west, a lean-to shed to the east, and the lighthouse looms to the north. The beach is back to the south.",
+      "exits": {"north": "base", "south": "beach", "west": "cottage", "east": "shed"}
+    },
+    "cottage": {
+      "name": "Keeper's Cottage",
+      "description": "A single cramped room that smells of tar and pipe smoke. A narrow cot, a scrubbed table and an old sea chest are the only furnishings. The door is to the east.",
+      "items": ["table", "chest", "note", "matches"],
+      "exits": {"east": "path", "out": "path"}
+    },
+    "shed": {
+      "name": "Lean-to Shed",
+      "description": "Nets, floats and broken oars clutter this draughty shed. The way out is west.",
+      "items": ["nets", "lamp", "rusty_key"],
+      "exits": {"west": "path", "out": "path"}
+    },
+    "base": {
+      "name": "Foot of the Lighthouse",
+      "description": "The white tower rises above you, streaked with salt. A heavy iron door is set into its base. The path runs back south.",
+      "items": ["iron_door"],
+      "extras": [{"requires": [{"flag": "door_unlocked"}], "text": "The iron door stands open."}],
+      "exits": {
+        "south": "path",
+        "north": {"to": "stairs", "requires": [{"flag": "door_unlocked"}], "blocked": "The iron door is locked fast."},
+        "in": {"to": "stairs", "requires": [{"flag": "door_unlocked"}], "blocked": "The iron door is locked fast."}
+      }
+    },
+    "stairs": {
+      "name": "Spiral Stair",
+      "description": "Iron steps spiral up into darkness. Grey light spills in through the doorway below.",
+      "exits": {
+        "down": "base",
+        "out": "base",
+        "up": {
+          "to": "lantern",
+          "requires": [{"flag": "lamp_lit"}, {"has": "lamp"}],
+          "blocked": "Above you the stair vanishes into total darkness. You'd break your neck without a light."
+        }
+      }
+    },
+    "lantern": {
+      "name": "Lantern Room",
+      "description": "Glass panes surround a great brass beacon, cold and dark. Far out to sea, a ship's lights are drifting toward the rocks.",
+      "items": ["beacon"],
+      "exits": {"down": "stairs"}
+    }
+  },
+
+  "items": {
+    "note": {
+      "name": "crumpled note",
+      "aliases": ["note", "paper"],
+      "description": "A scrap of paper covered in a cramped hand.",
+      "text": "\"Spare key for the tower is in my chest. And mind - never climb those stairs without a lamp. - Tom\""
+    },
+    "matches": {
+      "name": "box of matches",
+      "aliases": ["matches", "match", "box"],
+      "description": "A battered box of storm matches. It rattles reassuringly."
+    },
+    "table": {
+      "name": "scrubbed table",
+      "aliases": ["table"],
+      "scenery": true,
+      "description": "A pine table, scarred by years of use."
+    },
+    "chest": {
+      "name": "sea chest",
+      "aliases": ["chest", "trunk"],
+      "scenery": true,
+      "container": true,
+      "contents": ["brass_key"],
+      "description": "An old seaman's chest, bound with rope handles."
+    },
+    "brass_key": {
+      "name": "brass key",
+      "aliases": ["key"],
+      "description": "A heavy brass key, polished by handling."
+    },
+    "rusty_key": {
+      "name": "rusty key",
+      "aliases": ["key"],
+      "description": "A key so corroded it's hard to tell what it was ever for."
+    },
+    "nets": {
+      "name": "fishing nets",
+      "aliases": ["nets", "net", "floats", "oars"],
+      "scenery": true,
+      "article": "some",
+      "description": "Tangled, salt-stiff, and of no use to anyone."
+    },
+    "lamp": {
+      "name": "oil lamp",
+      "aliases": ["lamp", "lantern"],
+      "description": "A brass storm lamp, still half full of oil.",
+      "extras": [
+        {"requires": [{"flag": "lamp_lit"}], "text": "A steady yellow flame burns inside."},
+        {"requires": [{"not_flag": "lamp_lit"}], "text": "It is unlit."}
+      ]
+    },
+    "iron_door": {
+      "name": "iron door",
+      "aliases": ["door"],
+      "scenery": true,
+      "description": "Rivet-studded and painted black.",
+      "extras": [
+        {"requires": [{"flag": "door_unlocked"}], "text": "It stands open."},
+        {"requires": [{"not_flag": "door_unlocked"}], "text": "It is locked."}
+      ]
+    },
+    "beacon": {
+      "name": "brass beacon",
+      "aliases": ["beacon", "lens", "light"],
+      "scenery": true,
+      "description": "A huge lamp behind a ring of glass prisms. The wick is trimmed and the reservoir full. It only wants lighting.",
+      "extras": [{"requires": [{"flag": "beacon_lit"}], "text": "It blazes out across the water."}]
+    }
+  },
+
+  "triggers": [
+    {
+      "verbs": ["unlock", "open"], "item": "iron_door", "with": "brass_key",
+      "requires": [{"has": "brass_key"}, {"not_flag": "door_unlocked"}],
+      "effects": [
+        {"set_flag": "door_unlocked"},
+        {"score": 5},
+        {"say": "The brass key turns stiffly in the lock. You haul the iron door open."}
+      ]
+    },
+    {
+      "verbs": ["unlock", "open"], "item": "iron_door", "with": "rusty_key",
+      "requires": [{"has": "rusty_key"}, {"not_flag": "door_unlocked"}],
+      "effects": [{"say": "You try the rusty key, but it's far too corroded to turn."}]
+    },
+    {
+      "verbs": ["unlock", "open"], "item": "iron_door",
+      "requires": [{"flag": "door_unlocked"}],
+      "effects": [{"say": "It's already open."}]
+    },
+    {
+      "verbs": ["unlock", "open"], "item": "iron_door",
+      "effects": [{"say": "It's locked tight. You'll need the right key."}]
+    },
+    {
+      "verb": "use", "item": "brass_key", "with": "iron_door",
+      "requires": [{"in_room": "base"}, {"not_flag": "door_unlocked"}],
+      "effects": [
+        {"set_flag": "door_unlocked"},
+        {"score": 5},
+        {"say": "The brass key turns stiffly in the lock. You haul the iron door open."}
+      ]
+    },
+
+    {
+      "verb": "light", "item": "lamp", "with": "matches",
+      "requires": [{"has": "matches"}, {"not_flag": "lamp_lit"}],
+      "effects": [
+        {"set_flag": "lamp_lit"},
+        {"score": 10},
+        {"say": "You strike a match and touch it to the wick. The lamp catches with a steady yellow flame."}
+      ]
+    },
+    {
+      "verb": "light", "item": "lamp",
+      "requires": [{"flag": "lamp_lit"}],
+      "effects": [{"say": "It's already lit."}]
+    },
+    {
+      "verb": "light", "item": "lamp",
+      "effects": [{"say": "You have nothing to light it with."}]
+    },
+    {
+      "verb": "light", "item": "beacon", "with": "matches",
+      "requires": [{"has": "matches"}],
+      "effects": [
+        {"set_flag": "beacon_lit"},
+        {"score": 25},
+        {"say": "You strike your last match and reach in through the prisms. With a soft WHUMP the beacon flares, and a great beam swings out across the dark sea."}
+      ]
+    },
+    {
+      "verb": "light", "item": "beacon",
+      "effects": [{"say": "You have nothing to light it with."}]
+    }
+  ],
+
+  "events": [
+    {
+      "requires": [{"flag": "beacon_lit"}],
+      "effects": [
+        {"say": "\nFar below, the ship's lights waver... then slowly swing away from the rocks and out toward open water.\n\n*** You have won ***"},
+        {"win": "Thanks for playing."}
+      ]
+    }
+  ]
+}
